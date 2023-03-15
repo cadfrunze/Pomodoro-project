@@ -13,24 +13,32 @@ WORK_MIN = 25
 SHORT_BREAK_MIN = 5
 LONG_BREAK_MIN = 20
 
-
 # ---------------------------- TIMER RESET ------------------------------- #
 
 # ---------------------------- TIMER MECHANISM ------------------------------- #
 
 minute = 25
 secunde = 59
+
+
 def start_timer():
-    window.after(1000, cronometru, minute, secunde-1)
-    print(secunde)
+    window.after(1000, cronometru, secunde, minute)
+    canvas.itemconfig(timer_start, text=f'{minute}, {secunde}', font=(FONT_NAME, 35, 'bold'), fill='blue')
+
 
 
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- #
 
 
-
-def cronometru():
-    canvas.itemconfig(timer_start, text=f'{minute},{secunde}')
+def cronometru(secunde_par, min_par):
+    global secunde
+    global minute
+    print(secunde)
+    secunde = secunde - 1
+    if secunde == 0:
+        minute = minute - 1
+        secunde = 59
+    # window.after(1000, cronometru, secunde, minute)
     start_timer()
 
 
