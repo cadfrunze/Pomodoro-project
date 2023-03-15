@@ -17,29 +17,23 @@ LONG_BREAK_MIN = 20
 # ---------------------------- TIMER RESET ------------------------------- #
 
 # ---------------------------- TIMER MECHANISM ------------------------------- #
-def start_timer():
-    window.after(1000, cronometru, minute, secunde)
 
+minute = 25
+secunde = 59
+def start_timer():
+    window.after(1000, cronometru, minute, secunde-1)
+    print(secunde)
 
 
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- #
-minute = 25
-secunde = 59
-def cronometru(minute_fun, secunde_fun):
-    global secunde
-    global minute
-    for n in range(60, -1, -1):
-        print(minute, secunde)
-        time.sleep(1)
-        secunde_fun -= n
-        secunde = secunde_fun
-        canvas.itemconfig(timer_start, text=f'{minute}:{n}')
-    if secunde_fun == 0:
-        minute_fun -= 1
-        minute = minute_fun
-        secunde = 59
 
-    window.after(1000, cronometru, minute, secunde)
+
+
+def cronometru():
+    canvas.itemconfig(timer_start, text=f'{minute},{secunde}')
+    start_timer()
+
+
 
 # ---------------------------- UI SETUP ------------------------------- #
 def exit_progr():
@@ -57,7 +51,7 @@ canvas = Canvas(width=200, height=223, bg=RED, highlightthickness=0)
 tomato_img = PhotoImage(file='tomato.png')
 canvas.create_image(100, 110, image=tomato_img)
 
-timer_start = canvas.create_text(100, 114, text=f'00:00', font=(FONT_NAME, 35, 'bold'), fill='blue')
+timer_start = canvas.create_text(100, 114, text=f'{minute}, {secunde}', font=(FONT_NAME, 35, 'bold'), fill='blue')
 canvas.grid(column=1, row=1)
 
 timer_panel = Label(text='Timer', font=('arial', 30), bg=RED, fg=GREEN)
