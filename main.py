@@ -13,25 +13,44 @@ WORK_MIN = 25
 SHORT_BREAK_MIN = 5
 LONG_BREAK_MIN = 20
 
-
 # ---------------------------- TIMER RESET ------------------------------- #
 
 
 # ---------------------------- TIMER MECHANISM ------------------------------- #
+proba = True
+
+
 def click_cronometru():
-    cronometru(count=1500)
+    global proba
+    if proba:
+        proba = False
+        but_start.config(fg='gray')
+        cronometru(count=21 * 60)
+    else:
+        pass
 
 
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- #
+
+
 def cronometru(count):
     count_min = math.floor(count / 60)
     count_sec = count % 60
-    if count_min < 10 and count_sec > 10:
+    if count_min <= 10 and count_sec >= 10:
         canvas.itemconfig(timer_start, text=f'0{count_min}:{count_sec}')
-    elif count_min > 10 and count_sec < 10:
+    elif count_min >= 10 and count_sec <= 9:
         canvas.itemconfig(timer_start, text=f'{count_min}:0{count_sec}')
-    else:
+    elif count_min >= 10 and count_sec >= 10:
         canvas.itemconfig(timer_start, text=f'{count_min}:{count_sec}')
+    elif count_min <= 9 and count_sec <= 9:
+        canvas.itemconfig(timer_start, text=f'0{count_min}:0{count_sec}')
+    elif count_min <= 9 and count_sec >= 10:
+        canvas.itemconfig(timer_start, text=f'0{count_min}:{count_sec}')
+
+    if count_min % 5 == 0 and count_sec == 1 and count_min != 0:
+        return cronometru(count=SHORT_BREAK_MIN * 60)
+    elif count_min == 0 and count_sec == 0:
+        return cronometru(count=WORK_MIN * 60 - 5 * 60)
     window.after(1000, cronometru, count - 1)
 
 
