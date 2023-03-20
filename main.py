@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 import sys
-import time
+import math
 
 # ---------------------------- CONSTANTS ------------------------------- #
 PINK = "#e2979c"
@@ -19,23 +19,20 @@ LONG_BREAK_MIN = 20
 
 # ---------------------------- TIMER MECHANISM ------------------------------- #
 def click_cronometru():
-    cronometru(secunde=59, minute=24)
+    cronometru(count=1500)
 
 
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- #
-def cronometru(secunde, minute):
-        if minute < 10 and secunde > 10:
-            canvas.itemconfig(timer_start, text=f'0{minute}:{secunde}')
-        elif minute > 10 and secunde < 10:
-            canvas.itemconfig(timer_start, text=f'{minute}:0{secunde}')
-        else:
-            canvas.itemconfig(timer_start, text=f'{minute}:{secunde}')
-        if secunde == 0:
-            minute -= 1
-            secunde = 59
-        window.after(1000, cronometru, secunde - 1, minute)
-
-
+def cronometru(count):
+    count_min = math.floor(count / 60)
+    count_sec = count % 60
+    if count_min < 10 and count_sec > 10:
+        canvas.itemconfig(timer_start, text=f'0{count_min}:{count_sec}')
+    elif count_min > 10 and count_sec < 10:
+        canvas.itemconfig(timer_start, text=f'{count_min}:0{count_sec}')
+    else:
+        canvas.itemconfig(timer_start, text=f'{count_min}:{count_sec}')
+    window.after(1000, cronometru, count - 1)
 
 
 # ---------------------------- UI SETUP ------------------------------- #
