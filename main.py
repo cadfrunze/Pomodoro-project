@@ -25,7 +25,7 @@ def click_cronometru():
     if proba:
         proba = False
         but_start.config(fg='gray')
-        cronometru(count=21 * 60)
+        cronometru(count=WORK_MIN * 60)
     else:
         pass
 
