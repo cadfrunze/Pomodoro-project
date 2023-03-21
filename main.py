@@ -25,17 +25,25 @@ def click_cronometru():
     if proba:
         proba = False
         but_start.config(fg='gray')
-        cronometru(count=21 * 60)
+        cronometru(count=WORK_MIN * 60)
     else:
         pass
 
 
+def click_reset():
+    pass
+
+
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- #
 
+nr_pauze = 0
 
-def cronometru(count):
-    count_min = math.floor(count / 60)
-    count_sec = count % 60
+
+def pauza_scurta(count_scurt):
+    global nr_pauze
+    window.after(1000, pauza_scurta, count_scurt - 1)
+    count_min = math.floor(count_scurt / 60)
+    count_sec = count_scurt % 60
     if count_min <= 10 and count_sec >= 10:
         canvas.itemconfig(timer_start, text=f'0{count_min}:{count_sec}')
     elif count_min >= 10 and count_sec <= 9:
@@ -47,11 +55,32 @@ def cronometru(count):
     elif count_min <= 9 and count_sec >= 10:
         canvas.itemconfig(timer_start, text=f'0{count_min}:{count_sec}')
 
-    if count_min % 5 == 0 and count_sec == 1 and count_min != 0:
-        return cronometru(count=SHORT_BREAK_MIN * 60)
-    elif count_min == 0 and count_sec == 0:
-        return cronometru(count=WORK_MIN * 60 - 5 * 60)
+    if count_min == 0 and count_sec == 1:
+        cronometru(count=(WORK_MIN - SHORT_BREAK_MIN) * 60)
+
+
+
+def cronometru(count):
+    global nr_pauze
+    count_min = math.floor(count / 60)
+    count_sec = count % 60
     window.after(1000, cronometru, count - 1)
+    if count_min % 5 == 0 and count_sec == 0 and count_min != 0:
+        print('am intrat')
+        pauza_scurta(count_scurt=SHORT_BREAK_MIN * 60)
+
+    if count_min <= 10 and count_sec >= 10:
+        canvas.itemconfig(timer_start, text=f'0{count_min}:{count_sec}')
+    elif count_min >= 10 and count_sec <= 9:
+        canvas.itemconfig(timer_start, text=f'{count_min}:0{count_sec}')
+    elif count_min >= 10 and count_sec >= 10:
+        canvas.itemconfig(timer_start, text=f'{count_min}:{count_sec}')
+    elif count_min <= 9 and count_sec <= 9:
+        canvas.itemconfig(timer_start, text=f'0{count_min}:0{count_sec}')
+    elif count_min <= 9 and count_sec >= 10:
+        canvas.itemconfig(timer_start, text=f'0{count_min}:{count_sec}')
+
+
 
 
 # ---------------------------- UI SETUP ------------------------------- #
@@ -64,7 +93,7 @@ def exit_progr():
 
 
 window = Tk()
-window.title(string='Cronometru tip Pomodoro')
+window.title(string='Timer de tip Pomodoro')
 window.config(padx=25, pady=25, bg=RED)
 canvas = Canvas(width=200, height=223, bg=RED, highlightthickness=0)
 
@@ -79,7 +108,7 @@ timer_panel.grid(column=1, row=0)
 but_start = Button(text='Start', bg=YELLOW, highlightthickness=0, command=click_cronometru)
 but_start.grid(column=0, row=2)
 
-but_reset = Button(text='Reset', bg=YELLOW, highlightthickness=0)
+but_reset = Button(text='Reset', bg=YELLOW, highlightthickness=0, command=click_reset)
 but_reset.grid(column=2, row=2)
 
 but_exit = Button(text='Exit', command=exit_progr, fg=RED, highlightthickness=0)
