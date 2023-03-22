@@ -12,7 +12,7 @@ FONT_NAME = "Courier"
 WORK_MIN = 25
 SHORT_BREAK_MIN = 5
 LONG_BREAK_MIN = 20
-
+parcurgere = 0
 # ---------------------------- TIMER RESET ------------------------------- #
 
 
@@ -21,26 +21,35 @@ proba = True
 
 
 def click_cronometru():
+    global parcurgere
     global proba
     if proba:
         proba = False
         but_start.config(fg='gray')
-        cronometru(count=WORK_MIN * 60)
+        start_cronometru()
     else:
         pass
 
 
 def click_reset():
-    cronometru(count=WORK_MIN * 60)
+    pass
 
 
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- #
-
-pauze = 0
+def start_cronometru():
+    global parcurgere
+    parcurgere += 1
+    if parcurgere == 1 or parcurgere == 3 or parcurgere == 5:
+        cronometru(count=WORK_MIN * 60)
+    elif parcurgere == 2 or parcurgere == 4 or parcurgere == 6:
+        cronometru(count=SHORT_BREAK_MIN * 60)
+    elif parcurgere == 8:
+        cronometru(count=LONG_BREAK_MIN * 60)
+        parcurgere = 0
+        start_cronometru()
 
 
 def cronometru(count):
-    global pauze
     count_min = math.floor(count / 60)
     count_sec = count % 60
     if count_min < 10:
@@ -51,13 +60,8 @@ def cronometru(count):
     count_min = int(count_min)
     count_sec = int(count_sec)
     if count_min == 0 and count_sec == 0:
-        pauze += 1
-        if pauze <= 2:
-            cronometru(count=SHORT_BREAK_MIN * 60)
-            cronometru(count=WORK_MIN * 60)
+        start_cronometru()
     window.after(1000, cronometru, count - 1)
-
-
 
 
 # ---------------------------- UI SETUP ------------------------------- #
