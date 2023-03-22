@@ -31,54 +31,31 @@ def click_cronometru():
 
 
 def click_reset():
-    pass
+    cronometru(count=WORK_MIN * 60)
 
 
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- #
 
-nr_pauze = 0
-
-
-def pauza_scurta(count_scurt):
-    global nr_pauze
-    window.after(1000, pauza_scurta, count_scurt - 1)
-    count_min = math.floor(count_scurt / 60)
-    count_sec = count_scurt % 60
-    if count_min <= 10 and count_sec >= 10:
-        canvas.itemconfig(timer_start, text=f'0{count_min}:{count_sec}')
-    elif count_min >= 10 and count_sec <= 9:
-        canvas.itemconfig(timer_start, text=f'{count_min}:0{count_sec}')
-    elif count_min >= 10 and count_sec >= 10:
-        canvas.itemconfig(timer_start, text=f'{count_min}:{count_sec}')
-    elif count_min <= 9 and count_sec <= 9:
-        canvas.itemconfig(timer_start, text=f'0{count_min}:0{count_sec}')
-    elif count_min <= 9 and count_sec >= 10:
-        canvas.itemconfig(timer_start, text=f'0{count_min}:{count_sec}')
-
-    if count_min == 0 and count_sec == 1:
-        cronometru(count=(WORK_MIN - SHORT_BREAK_MIN) * 60)
-
+pauze = 0
 
 
 def cronometru(count):
-    global nr_pauze
+    global pauze
     count_min = math.floor(count / 60)
     count_sec = count % 60
+    if count_min < 10:
+        count_min = f'0{count_min}'
+    if count_sec < 10:
+        count_sec = f'0{count_sec}'
+    canvas.itemconfig(timer_start, text=f'{count_min}:{count_sec}')
+    count_min = int(count_min)
+    count_sec = int(count_sec)
+    if count_min == 0 and count_sec == 0:
+        pauze += 1
+        if pauze <= 2:
+            cronometru(count=SHORT_BREAK_MIN * 60)
+            cronometru(count=WORK_MIN * 60)
     window.after(1000, cronometru, count - 1)
-    if count_min % 5 == 0 and count_sec == 0 and count_min != 0:
-        print('am intrat')
-        pauza_scurta(count_scurt=SHORT_BREAK_MIN * 60)
-
-    if count_min <= 10 and count_sec >= 10:
-        canvas.itemconfig(timer_start, text=f'0{count_min}:{count_sec}')
-    elif count_min >= 10 and count_sec <= 9:
-        canvas.itemconfig(timer_start, text=f'{count_min}:0{count_sec}')
-    elif count_min >= 10 and count_sec >= 10:
-        canvas.itemconfig(timer_start, text=f'{count_min}:{count_sec}')
-    elif count_min <= 9 and count_sec <= 9:
-        canvas.itemconfig(timer_start, text=f'0{count_min}:0{count_sec}')
-    elif count_min <= 9 and count_sec >= 10:
-        canvas.itemconfig(timer_start, text=f'0{count_min}:{count_sec}')
 
 
 
@@ -100,7 +77,8 @@ canvas = Canvas(width=200, height=223, bg=RED, highlightthickness=0)
 tomato_img = PhotoImage(file='tomato.png')
 canvas.create_image(100, 110, image=tomato_img)
 
-timer_start = canvas.create_text(100, 114, text=f'25:00', font=(FONT_NAME, 35, 'bold'), fill='blue')
+timer_start = canvas.create_text(100, 114, text=f'{WORK_MIN % 60}:0{math.floor(WORK_MIN / 60)}',
+                                 font=(FONT_NAME, 35, 'bold'), fill='blue')
 canvas.grid(column=1, row=1)
 timer_panel = Label(text='Timer', font=('arial', 30), bg=RED, fg=GREEN)
 timer_panel.grid(column=1, row=0)
