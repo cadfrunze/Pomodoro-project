@@ -13,11 +13,29 @@ WORK_MIN = 25
 SHORT_BREAK_MIN = 5
 LONG_BREAK_MIN = 20
 parcurgere = 0
+timer = None
+proba = True
+
+
 # ---------------------------- TIMER RESET ------------------------------- #
+def reset():
+    global proba
+    global parcurgere
+    proba = True
+    question = messagebox.askquestion(message='Esti sigur ca doresti sa resetezi cronometrul??')
+    if question == 'yes':
+        window.after_cancel(timer)
+        parcurgere = 0
+        but_start = Button(text='Start', bg=YELLOW, highlightthickness=0, fg='black', command=click_cronometru)
+        but_start.grid(column=0, row=2)
+        timer_panel.config(text='Timer')
+        canvas.itemconfig(timer_start, text=f'{WORK_MIN % 60}:0{math.floor(WORK_MIN / 60)}')
+        check_mark.config(text='')
+    else:
+        pass
 
 
 # ---------------------------- TIMER MECHANISM ------------------------------- #
-proba = True
 
 
 def click_cronometru():
@@ -25,14 +43,11 @@ def click_cronometru():
     global proba
     if proba:
         proba = False
-        but_start.config(fg='gray')
+        but_start = Label(text='Start', bg=YELLOW, highlightthickness=0, fg='gray')
+        but_start.grid(column=0, row=2)
         start_cronometru()
     else:
         pass
-
-
-def click_reset():
-    pass
 
 
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- #
@@ -40,18 +55,21 @@ def start_cronometru():
     global parcurgere
     parcurgere += 1
     if parcurgere == 1 or parcurgere == 3 or parcurgere == 5:
+        timer_panel.config(fg=YELLOW, text='Work')
         cronometru(count=WORK_MIN * 60)
     elif parcurgere == 2 or parcurgere == 4 or parcurgere == 6:
+        timer_panel.config(fg=GREEN, text='Short Break')
         cronometru(count=SHORT_BREAK_MIN * 60)
     elif parcurgere == 8:
+        timer_panel.config(fg=YELLOW, text='Long Break')
         cronometru(count=LONG_BREAK_MIN * 60)
         parcurgere = 0
-        start_cronometru()
 
 
 def cronometru(count):
     count_min = math.floor(count / 60)
     count_sec = count % 60
+
     if count_min < 10:
         count_min = f'0{count_min}'
     if count_sec < 10:
@@ -59,9 +77,18 @@ def cronometru(count):
     canvas.itemconfig(timer_start, text=f'{count_min}:{count_sec}')
     count_min = int(count_min)
     count_sec = int(count_sec)
+
     if count_min == 0 and count_sec == 0:
         start_cronometru()
-    window.after(1000, cronometru, count - 1)
+        marks = ''
+        work_session = math.floor(parcurgere / 2)
+        for _ in range(work_session):
+            marks += '✅'
+        check_mark.config(text=marks)
+
+    else:
+        global timer
+        timer = window.after(1000, cronometru, count - 1)
 
 
 # ---------------------------- UI SETUP ------------------------------- #
@@ -90,13 +117,13 @@ timer_panel.grid(column=1, row=0)
 but_start = Button(text='Start', bg=YELLOW, highlightthickness=0, command=click_cronometru)
 but_start.grid(column=0, row=2)
 
-but_reset = Button(text='Reset', bg=YELLOW, highlightthickness=0, command=click_reset)
+but_reset = Button(text='Reset', bg=YELLOW, highlightthickness=0, command=reset)
 but_reset.grid(column=2, row=2)
 
 but_exit = Button(text='Exit', command=exit_progr, fg=RED, highlightthickness=0)
 but_exit.grid(column=3, row=2)
 
-check_mark = Label(text='✅', font=('arial', 30), bg=RED, fg=YELLOW)
+check_mark = Label(font=('arial', 20), bg=RED, fg=YELLOW)
 check_mark.grid(column=1, row=3)
 
 window.mainloop()
