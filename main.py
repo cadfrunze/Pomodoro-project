@@ -21,10 +21,10 @@ proba = True
 def reset():
     global proba
     global parcurgere
-    proba = True
     question = messagebox.askquestion(message='Esti sigur ca doresti sa resetezi cronometrul??')
     if question == 'yes':
         window.after_cancel(timer)
+        proba = True
         parcurgere = 0
         but_start = Button(text='Start', bg=YELLOW, highlightthickness=0, fg='black', command=click_cronometru)
         but_start.grid(column=0, row=2)
